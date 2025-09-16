@@ -95,6 +95,13 @@ export default function EnterAccountScreen() {
       logo: imageMap[imageKey] || imageMap["CommercialB"], // fallback if missing
     },
   ];
+  // Filter beneficiaries dynamically
+const filteredBeneficiaries = beneficiaries.filter(
+  (b) =>
+    b.number.includes(accountNumber) || 
+    b.name.toLowerCase().includes(accountNumber.toLowerCase())
+);
+
 
   return (
     <KeyboardAvoidingView
@@ -105,10 +112,10 @@ export default function EnterAccountScreen() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.mainContainer}>
           <FlatList
-            data={accountNumber.length > 0 || hasChecked ? [] : beneficiaries}
-            keyExtractor={(item) => item.id}
-            style={styles.container}
-            contentContainerStyle={{ paddingBottom: 120 }}
+             data={accountNumber.length > 0 ? filteredBeneficiaries : beneficiaries}
+  keyExtractor={(item) => item.id}
+  style={styles.container}
+  contentContainerStyle={{ paddingBottom: 120 }}
             ListHeaderComponent={
               <>
                 <Text style={styles.headerText}>Enter Account Number</Text>
@@ -214,25 +221,29 @@ export default function EnterAccountScreen() {
           {/* Always visible button */}
  {/* Fixed Bottom Button (will move up with keyboard) */}
         <View style={styles.bottomButtonWrapper}>
-          <Pressable
-            style={styles.bottomButton}
-            onPress={handleNext}
-            disabled={loading || accountNumber.length === 0}
-          >
-            {loading ? (
-              <>
-                <ActivityIndicator
-                  size="small"
-                  color="#fff"
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={styles.buttonText}>Check Account</Text>
-              </>
-            ) : (
-              <Text style={styles.buttonText}>Next</Text>
-            )}
-          </Pressable>
-        </View>
+  <Pressable
+    style={[
+      styles.bottomButton,
+      accountNumber.length >= 3 ? styles.buttonEnabled : styles.buttonDisabled,
+    ]}
+    onPress={handleNext}
+    disabled={loading || accountNumber.length < 3} // 👈 now requires >= 3
+  >
+    {loading ? (
+      <>
+        <ActivityIndicator
+          size="small"
+          color="#fff"
+          style={{ marginRight: 8 }}
+        />
+        <Text style={styles.buttonText}>Check Account</Text>
+      </>
+    ) : (
+      <Text style={styles.buttonText}>Next</Text>
+    )}
+  </Pressable>
+</View>
+
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -265,20 +276,24 @@ const styles = StyleSheet.create({
   beneficiaryName: { fontSize: 14, fontWeight: "600", color: "#000" },
   beneficiaryBank: { fontSize: 12, color: "#888" },
 
-  bottomButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    height: 50,
-    backgroundColor: "#003366",
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    marginBottom: 20,
-  },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+bottomButton: {
+  position: "absolute",
+  bottom: 20,
+  height: 50,
+  backgroundColor: "#003366",   // 👈 static background
+  borderRadius: 25,
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "row",
+  marginBottom: 20,
+  width:"100%"             // 👈 this pushes it further offscreen
+},
+
+buttonDisabled: {
+  backgroundColor: "#ccc", // disabled gray
+},
+
+buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 
   profileWrapper: {
     marginTop: -20,
@@ -300,6 +315,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  bottomButtonWrapper: {
+  position: "absolute",
+  bottom: 20,
+  left: 20,
+  right: 20,
+},
   profileImage: {
     width: 66,
     height: 66,

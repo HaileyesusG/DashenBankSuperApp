@@ -12,40 +12,55 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Dimensions } from "react-native";
 import { useRouter } from "expo-router";
+import Header from "../components/BackButton";
 const { width } = Dimensions.get("window");
+import FixedButton from "../components/FixedButton";
+import DetailRow from "../components/DetailRow";
 const keyWidth = (width * 0.8 - 20) / 3; // 80% of screen, minus small gaps
 import { useLocalSearchParams } from "expo-router";
 
 export default function ConfirmTransferScreen() {
-  const { amount, accountNumber,clientNumber,receipientName } = useLocalSearchParams();
+  const { amount, accountNumber,clientNumber,receipientName,name } = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false); // 👈 NEW STATE
   const redirect = useRouter();
 
-  const handleKeyPress = (val) => {
-    if (val === "back") {
-      setPin(pin.slice(0, -1));
-    } else if (val === "confirm") {
-      console.log("PIN entered:", pin);
-      setModalVisible(false);
-      setPin("");
+const handleKeyPress = (val) => {
+  if (val === "back") {
+    setPin(pin.slice(0, -1));
+  } else if (val === "confirm") {
+    proceedToNextPage();
+  } else {
+    if (pin.length < 6) {
+      const newPin = pin + val;
+      setPin(newPin);
 
-      redirect.push({
-      pathname: "SendMoney",
-      params: {
-        amount:amount,
-        accountNumber:accountNumber,
-        clientNumber:clientNumber,
-        receipientName:receipientName
-      },
-    })
-    } else {
-      if (pin.length < 6) {
-        setPin(pin + val);
+      // 👇 Check if PIN is complete (6 digits)
+      if (newPin.length === 6) {
+        proceedToNextPage();
       }
     }
-  };
+  }
+};
+
+// Reusable function to redirect
+const proceedToNextPage = () => {
+  console.log("PIN entered:", pin);
+  setModalVisible(false);
+  setPin("");
+
+  redirect.push({
+    pathname: "SendMoney",
+    params: {
+      amount,
+      accountNumber,
+      clientNumber,
+      receipientName,
+    },
+  });
+};
+
     const formatAmount = (value) => {
     let numericValue = value.replace(/[^0-9.]/g, "");
     let parts = numericValue.split(".");
@@ -56,6 +71,10 @@ export default function ConfirmTransferScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
+            <View style={styles.headerWrapper}>
+              <Header title="Confirm Transfer" />
+            </View>
       {/* Scrollable content */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Image
@@ -68,32 +87,18 @@ export default function ConfirmTransferScreen() {
 </Text>
 
         <Text style={styles.sectionTitle}>Transaction Details</Text>
-        <View style={styles.detailsBox}>
-          <View style={styles.row}>
-            <Text style={styles.label}>Sender Account:</Text>
-            <Text style={styles.value}>Abebe Ayele Girma</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Recipient Account:</Text>
-            <Text style={styles.value}>{clientNumber}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Recipient Name:</Text>
-            <Text style={styles.value}>{receipientName}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Budget Type:</Text>
-            <Text style={styles.value}>Off Budget</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Fee:</Text>
-            <Text style={styles.value}>0.00 ETB</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label2}>Total:</Text>
-            <Text style={styles.value}>{formatAmount(amount)} ETB</Text>
-          </View>
-        </View>
+<View style={styles.detailsBox}>
+  <DetailRow label="Sender Account:" value="Abebe Ayele Girma" />
+  <DetailRow label="Recipient Account:" value={clientNumber} />
+  <DetailRow label="Recipient Name:" value={receipientName} />
+  <DetailRow label="Budget Type:" value={name} />
+  <DetailRow label="Fee:" value="0.00 ETB" />
+  <DetailRow
+    label="Total:"
+    value={`${formatAmount(amount)} ETB`}
+    isTotal={true}
+  />
+</View>
 
         <Text style={styles.reasonText}>Reason</Text>
         <View style={styles.cylinder}>
@@ -101,19 +106,7 @@ export default function ConfirmTransferScreen() {
         </View>
       </ScrollView>
 
-      {/* Sticky Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.confirmButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.confirmButtonText}>Confirm</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity>
-          <Text style={styles.cancelButton}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
+      
 
       {/* Modal */}
       <Modal
@@ -228,6 +221,23 @@ export default function ConfirmTransferScreen() {
           </View>
         </ImageBackground>
       </Modal>
+      {/* Sticky Buttons */}
+      <View style={styles.buttonContainer}>
+        <FixedButton
+                  title="Confirm"
+                  onPress={() => setModalVisible(true)} // 👈 Open Tip Modal
+                  containerStyle={{
+                    marginBottom: 0,
+                    marginTop: 5,
+                    backgroundColor: "transparent",
+                  }}
+                  buttonStyle={{ backgroundColor: "#003366" }}
+                />
+
+        <TouchableOpacity>
+          <Text style={styles.cancelButton}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -296,6 +306,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopColor: "#E0E0E0",
     backgroundColor: "#fff",
+    marginBottom:10
   },
   confirmButton: {
     width: "100%",
@@ -328,7 +339,7 @@ const styles = StyleSheet.create({
   },
   modalBox: {
     width: "100%",
-    height: "85%",
+    height: "90%",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     backgroundColor: "#fff",
@@ -371,6 +382,12 @@ const styles = StyleSheet.create({
     color: "#012169",
     textAlign: "center",
     marginTop: 15,
+  },
+    headerWrapper: {
+    paddingBottom: 8,
+    marginBottom: 8,
+    marginTop: 30,
+    marginLeft: 20,
   },
 
   fingerprintBox: { alignItems: "center", marginVertical: 30 },

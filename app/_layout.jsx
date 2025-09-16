@@ -50,15 +50,10 @@ export default function RootLayout() {
             fontWeight: "600", // optional: make it semi-bold
           },
         }}/>
-        <Stack.Screen name="ConfirmTransfer" options={{
-          title: "Confirm Transfer ",
-          headerTitleAlign: "left",
-          headerTitleStyle: {
-            fontSize: 16,   // 👈 smaller title font
-            fontWeight: "600", // optional: make it semi-bold
-          },
-        }}/>
+        <Stack.Screen name="ConfirmTransfer" options={{ headerShown: false }}/>
         <Stack.Screen name="SendMoney" options={{ headerShown: false }} />
+        <Stack.Screen name="Qrscanner" options={{ headerShown: false }} />
+        <Stack.Screen name="QrPayment" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
 

@@ -18,7 +18,6 @@ export default function AmountEntryScreen() {
    const { accountNumber,clientNumber,receipientName } = useLocalSearchParams();
   const [amount, setAmount] = useState("");
   const [modalVisible, setModalVisible] = useState(false); // Account Modal
-  const [selectedAccount, setSelectedAccount] = useState(null);
   const [budgetModalVisible, setBudgetModalVisible] = useState(false); // Budget Modal
   const [toggleEnabled, setToggleEnabled] = useState(true);
   const redirect = useRouter();
@@ -30,7 +29,7 @@ export default function AmountEntryScreen() {
     ["7", "8", "9"],
     [".", "0", "back"],
   ];
-
+const budgetName= "Off Budget";
   const formatAmount = (value) => {
     let numericValue = value.replace(/[^0-9.]/g, "");
     let parts = numericValue.split(".");
@@ -49,11 +48,26 @@ export default function AmountEntryScreen() {
   const handleNext = () => {
     setBudgetModalVisible(true);
   };
+  const handleSkip = (name) => {
+    setBudgetModalVisible(false);
+        redirect.push({
+      pathname: "ConfirmTransfer",
+      params: {
+        amount: getNumericAmount(), // 👈 now a number
+        accountNumber:accountNumber,
+        clientNumber:clientNumber,
+        receipientName:receipientName,
+        name:name
+      },
+    })
+  };
+
+  
 
   const accounts = [
     {
       id: 1,
-      number: "4567873648236",
+      number: accountNumber,
       icon: require("../assets/images/BankImage.png"),
     },
     {
@@ -67,6 +81,9 @@ export default function AmountEntryScreen() {
       icon: require("../assets/images/BankImage.png"),
     },
   ];
+const [selectedAccount, setSelectedAccount] = useState(accounts[0].id); // ✅ final choice
+const [tempSelectedAccount, setTempSelectedAccount] = useState(selectedAccount); // ✅ temp choice
+
 
   const handleSelectAccount = (id) => setSelectedAccount(id);
 
@@ -153,16 +170,19 @@ export default function AmountEntryScreen() {
 
       {/* Account Cylinder */}
       <TouchableOpacity
-        style={styles.accountCylinder}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.accountNumber}>
-          {typeof selectedAccount === "string"
-            ? selectedAccount
-            : accountNumber}
-        </Text>
-        <Ionicons name="chevron-down" size={11} color="#000000" />
-      </TouchableOpacity>
+  style={styles.accountCylinder}
+  onPress={() => {
+    setTempSelectedAccount(selectedAccount); // ✅ reset temp selection
+    setModalVisible(true);
+  }}
+>
+  <Text style={styles.accountNumber}>
+    {accounts.find((a) => a.id === selectedAccount)?.number}
+  </Text>
+  <Ionicons name="chevron-down" size={11} color="#000000" />
+</TouchableOpacity>
+
+
 
       {/* Available Amount */}
       <View style={styles.availableAmountWrapper}>
@@ -218,59 +238,55 @@ export default function AmountEntryScreen() {
             {/* Buttons */}
             <View style={styles.modalHeader}>
               <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
+  style={styles.cancelButton}
+  onPress={() => setModalVisible(false)} // ✅ just close, don't update final state
+>
+  <Text style={styles.cancelText}>Cancel</Text>
+</TouchableOpacity>
+
               <TouchableOpacity
-                style={styles.doneButton}
-                onPress={() => {
-                  if (selectedAccount !== null) {
-                    const account = accounts.find(
-                      (a) => a.id === selectedAccount
-                    );
-                    if (account) setSelectedAccount(account.number);
-                  }
-                  setModalVisible(false);
-                }}
-              >
-                <Text style={styles.doneText}>Done</Text>
-              </TouchableOpacity>
+  style={styles.doneButton}
+  onPress={() => {
+    setSelectedAccount(tempSelectedAccount); // ✅ commit the choice
+    setModalVisible(false);
+  }}
+>
+  <Text style={styles.doneText}>Done</Text>
+</TouchableOpacity>
+
+
             </View>
 
             <Text style={styles.modalTitle}>Select Account</Text>
 
-            {accounts.map((account) => (
+{accounts.map((account) => (
   <TouchableOpacity
     key={account.id}
     style={[
       styles.accountCard,
-      selectedAccount === account.id && {
+      tempSelectedAccount === account.id && {
         borderColor: "#131C66",
-        backgroundColor: "#FEF7FF", // ✅ soft purple background when selected
+        backgroundColor: "#FEF7FF",
       },
     ]}
-    onPress={() => handleSelectAccount(account.id)}
+    onPress={() => setTempSelectedAccount(account.id)}
   >
     <View
       style={[
         styles.checkbox,
-        selectedAccount === account.id && { backgroundColor: "#131C66" },
+        tempSelectedAccount === account.id && { backgroundColor: "#131C66" },
       ]}
     >
-      {selectedAccount === account.id && (
+      {tempSelectedAccount === account.id && (
         <Ionicons name="checkmark" size={10} color="#fff" />
       )}
     </View>
-    <Image
-      source={account.icon}
-      style={styles.bankIcon}
-      resizeMode="contain"
-    />
+    <Image source={account.icon} style={styles.bankIcon} resizeMode="contain" />
     <Text style={styles.cardAccountNumber}>{account.number}</Text>
   </TouchableOpacity>
 ))}
+
+
 
           </View>
         </View>
@@ -292,16 +308,10 @@ export default function AmountEntryScreen() {
               <Text style={styles.budgetTitle}>Select Budget</Text>
               <TouchableOpacity
   style={styles.skipButton}
-  onPress={() =>
-    redirect.push({
-      pathname: "ConfirmTransfer",
-      params: {
-        amount: getNumericAmount(), // 👈 now a number
-        accountNumber:accountNumber,
-        clientNumber:clientNumber,
-        receipientName:receipientName
-      },
-    })
+  onPress={
+    ()=>
+    handleSkip(budgetName)
+
   }
 >
   <Text style={styles.skipText}>Skip</Text>
@@ -333,16 +343,9 @@ export default function AmountEntryScreen() {
               renderItem={({ item }) => (
                 <TouchableOpacity
       style={styles.budgetCard}
-      onPress={() =>
-        redirect.push({
-          pathname: "ConfirmTransfer",
-          params: {
-        amount: getNumericAmount(), // 👈 now a number
-        accountNumber:accountNumber,
-        clientNumber:clientNumber,
-        receipientName:receipientName
-      },
-        })
+      onPress={
+        ()=>
+       handleSkip(item.name)
       }
     >
                   <Image source={item.icon} style={styles.budgetIcon} />
