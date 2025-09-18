@@ -20,48 +20,49 @@ const keyWidth = (width * 0.8 - 20) / 3; // 80% of screen, minus small gaps
 import { useLocalSearchParams } from "expo-router";
 
 export default function ConfirmTransferScreen() {
-  const { amount, accountNumber,clientNumber,receipientName,name } = useLocalSearchParams();
+  const { amount, accountNumber, clientNumber, receipientName, name } =
+    useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false); // 👈 NEW STATE
   const redirect = useRouter();
 
-const handleKeyPress = (val) => {
-  if (val === "back") {
-    setPin(pin.slice(0, -1));
-  } else if (val === "confirm") {
-    proceedToNextPage();
-  } else {
-    if (pin.length < 6) {
-      const newPin = pin + val;
-      setPin(newPin);
+  const handleKeyPress = (val) => {
+    if (val === "back") {
+      setPin(pin.slice(0, -1));
+    } else if (val === "confirm") {
+      proceedToNextPage();
+    } else {
+      if (pin.length < 6) {
+        const newPin = pin + val;
+        setPin(newPin);
 
-      // 👇 Check if PIN is complete (6 digits)
-      if (newPin.length === 6) {
-        proceedToNextPage();
+        // 👇 Check if PIN is complete (6 digits)
+        if (newPin.length === 6) {
+          proceedToNextPage();
+        }
       }
     }
-  }
-};
+  };
 
-// Reusable function to redirect
-const proceedToNextPage = () => {
-  console.log("PIN entered:", pin);
-  setModalVisible(false);
-  setPin("");
+  // Reusable function to redirect
+  const proceedToNextPage = () => {
+    console.log("PIN entered:", pin);
+    setModalVisible(false);
+    setPin("");
 
-  redirect.push({
-    pathname: "SendMoney",
-    params: {
-      amount,
-      accountNumber,
-      clientNumber,
-      receipientName,
-    },
-  });
-};
+    redirect.push({
+      pathname: "SendMoney",
+      params: {
+        amount,
+        accountNumber,
+        clientNumber,
+        receipientName,
+      },
+    });
+  };
 
-    const formatAmount = (value) => {
+  const formatAmount = (value) => {
     let numericValue = value.replace(/[^0-9.]/g, "");
     let parts = numericValue.split(".");
     // 👇 use dot instead of comma
@@ -72,9 +73,9 @@ const proceedToNextPage = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-            <View style={styles.headerWrapper}>
-              <Header title="Confirm Transfer" />
-            </View>
+      <View style={styles.headerWrapper}>
+        <Header title="Confirm Transfer" />
+      </View>
       {/* Scrollable content */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Image
@@ -83,30 +84,28 @@ const proceedToNextPage = () => {
         />
         <Text style={styles.confirmText}>Confirm Transfer</Text>
         <Text style={styles.amountText}>
-  {Number(amount).toLocaleString()} Birr
-</Text>
+          {Number(amount).toLocaleString()} Birr
+        </Text>
 
         <Text style={styles.sectionTitle}>Transaction Details</Text>
-<View style={styles.detailsBox}>
-  <DetailRow label="Sender Account:" value="Abebe Ayele Girma" />
-  <DetailRow label="Recipient Account:" value={clientNumber} />
-  <DetailRow label="Recipient Name:" value={receipientName} />
-  <DetailRow label="Budget Type:" value={name} />
-  <DetailRow label="Fee:" value="0.00 ETB" />
-  <DetailRow
-    label="Total:"
-    value={`${formatAmount(amount)} ETB`}
-    isTotal={true}
-  />
-</View>
+        <View style={styles.detailsBox}>
+          <DetailRow label="Sender Account:" value="Abebe Ayele Girma" />
+          <DetailRow label="Recipient Account:" value={clientNumber} />
+          <DetailRow label="Recipient Name:" value={receipientName} />
+          <DetailRow label="Budget Type:" value={name} />
+          <DetailRow label="Fee:" value="0.00 ETB" />
+          <DetailRow
+            label="Total:"
+            value={`${formatAmount(amount)} ETB`}
+            isTotal={true}
+          />
+        </View>
 
         <Text style={styles.reasonText}>Reason</Text>
         <View style={styles.cylinder}>
           <Text style={styles.cylinderText}>Transfer</Text>
         </View>
       </ScrollView>
-
-      
 
       {/* Modal */}
       <Modal
@@ -128,19 +127,16 @@ const proceedToNextPage = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalBox}>
               {/* Close Button */}
+<View style={{marginTop:25}}>
+  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Image
+                  source={require("../assets/images/Close.png")} // local image
+                  style={styles.closeBtn}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+</View>
               
-                <TouchableOpacity
-  
-  onPress={() => setModalVisible(false)}
->
-    <Image
-    source={require('../assets/images/Close.png')} // local image
-    style={styles.closeBtn} 
-    resizeMode="contain"
-  />
-</TouchableOpacity>
-              
-             
 
               {/* Title */}
               <Text style={styles.modalTitle}>Please Verify!</Text>
@@ -167,14 +163,13 @@ const proceedToNextPage = () => {
               </TouchableOpacity>
 
               {/* Fingerprint */}
-<View style={styles.fingerprintBox}>
-  <Image
-    source={require('../assets/images/Finger.png')} // local image
-    style={{ width: 44, height: 44, tintColor: '#131C66' }} 
-    resizeMode="contain"
-  />
-</View>
-
+              <View style={styles.fingerprintBox}>
+                <Image
+                  source={require("../assets/images/Finger.png")} // local image
+                  style={{ width: 44, height: 44, tintColor: "#131C66" }}
+                  resizeMode="contain"
+                />
+              </View>
 
               {/* Keyboard */}
               <View style={styles.keyboard}>
@@ -204,10 +199,14 @@ const proceedToNextPage = () => {
                             />
                           ) : key === "back" ? (
                             <Image
-  source={require("../assets/images/Back.png")} // replace with your image path
-  style={{ width: 28, height: 28, tintColor: "#000" }} // keep same size and color if needed
-  resizeMode="contain"
-/>
+                              source={require("../assets/images/Back.png")} // replace with your image path
+                              style={{
+                                width: 28,
+                                height: 28,
+                                tintColor: "#000",
+                              }} // keep same size and color if needed
+                              resizeMode="contain"
+                            />
                           ) : (
                             <Text style={styles.keyText}>{key}</Text>
                           )}
@@ -224,15 +223,15 @@ const proceedToNextPage = () => {
       {/* Sticky Buttons */}
       <View style={styles.buttonContainer}>
         <FixedButton
-                  title="Confirm"
-                  onPress={() => setModalVisible(true)} // 👈 Open Tip Modal
-                  containerStyle={{
-                    marginBottom: 0,
-                    marginTop: 5,
-                    backgroundColor: "transparent",
-                  }}
-                  buttonStyle={{ backgroundColor: "#003366" }}
-                />
+          title="Confirm"
+          onPress={() => setModalVisible(true)} // 👈 Open Tip Modal
+          containerStyle={{
+            marginBottom: 0,
+            marginTop: 5,
+            backgroundColor: "transparent",
+          }}
+          buttonStyle={{ backgroundColor: "#003366" }}
+        />
 
         <TouchableOpacity>
           <Text style={styles.cancelButton}>Cancel</Text>
@@ -290,7 +289,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   closeBtn: {
-    width: 30, height: 30, tintColor: '#131C66'
+    width: 30,
+    height: 30,
+    tintColor: "#131C66",
+    marginLeft: "87%",
   },
   cylinder: {
     width: "100%",
@@ -306,7 +308,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopColor: "#E0E0E0",
     backgroundColor: "#fff",
-    marginBottom:10
+    marginBottom: 10,
   },
   confirmButton: {
     width: "100%",
@@ -339,13 +341,13 @@ const styles = StyleSheet.create({
   },
   modalBox: {
     width: "100%",
-    height: "90%",
+    height: "92%",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     backgroundColor: "#fff",
     alignSelf: "center",
   },
-  closeBtn: { position: "absolute", top: 30, right: 20 },
+
   modalTitle: {
     fontSize: 30,
     fontWeight: "900",
@@ -383,7 +385,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 15,
   },
-    headerWrapper: {
+  headerWrapper: {
     paddingBottom: 8,
     marginBottom: 8,
     marginTop: 30,

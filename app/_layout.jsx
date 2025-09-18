@@ -34,26 +34,16 @@ export default function RootLayout() {
             fontWeight: "600", // optional: make it semi-bold
           },
         }}/>
-        <Stack.Screen name="TransferToOtherBank2" options={{
-          title: "Transfer to Other Bank",
-          headerTitleAlign: "left",
-          headerTitleStyle: {
-            fontSize: 16,   // 👈 smaller title font
-            fontWeight: "600", // optional: make it semi-bold
-          },
-        }}/>
-        <Stack.Screen name="TransferToOtherBank3" options={{
-          title: "Transfer to Other Bank",
-          headerTitleAlign: "left",
-          headerTitleStyle: {
-            fontSize: 16,   // 👈 smaller title font
-            fontWeight: "600", // optional: make it semi-bold
-          },
-        }}/>
+        <Stack.Screen name="TransferToOtherBank2" options={{ headerShown: false }}/>
+        <Stack.Screen name="TransferToOtherBank3" options={{ headerShown: false }}/>
         <Stack.Screen name="ConfirmTransfer" options={{ headerShown: false }}/>
+        <Stack.Screen name="ConfirmTransfer2" options={{ headerShown: false }}/>
+        <Stack.Screen name="PinConfirmation" options={{ headerShown: false }}/>
         <Stack.Screen name="SendMoney" options={{ headerShown: false }} />
         <Stack.Screen name="Qrscanner" options={{ headerShown: false }} />
         <Stack.Screen name="QrPayment" options={{ headerShown: false }} />
+        <Stack.Screen name="QrscannerM" options={{ headerShown: false }} />
+        <Stack.Screen name="MerchantPayment" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
 

@@ -196,6 +196,9 @@ const renderMatrixPage = ({ item, index }) => {
               onPress={() => {
                 if (cell.label === "Send To Other") {
                   redirect.push("/TransferToOtherBank");
+                }
+                else if (cell.label === "Merchant Payment") {
+                  redirect.push("/QrscannerM");
                 } else {
                   console.log("ok");
                 }

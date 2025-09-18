@@ -188,7 +188,7 @@ const handleSkip = (nameB) => {
             </View>
 
             {/* Toggle Row */}
-            <View style={styles.toggleRow}>
+            <View style={styles.toggleRow2}>
               <Text style={styles.toggleLabel}>Tip selection on Transfers</Text>
               <Switch
                 value={isTipEnabled}
@@ -272,7 +272,7 @@ const handleSkip = (nameB) => {
             </View>
 
             {/* Budget Selection Toggle */}
-            <View style={styles.toggleRow2}>
+            <View style={styles.toggleRow}>
               <Text style={styles.toggleLabel2}>
                 Budget selection on Transfers
               </Text>
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.3)",
   },
   tipModal: {
-    height: 530,
+    height: "auto",
     width: "100%",
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   fontWeight: "500",
   color: "#000000",
 },
-  toggleSwitch: { width: 30, height: 30 },
+  toggleSwitch: { width: 30, height: 30, marginLeft:20 },
   customTipBox: {
     marginTop: 20,
     width: "100%",

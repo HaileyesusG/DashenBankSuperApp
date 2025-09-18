@@ -13,7 +13,8 @@ import {
   Switch,
   FlatList,
 } from "react-native";
-
+import Header from "../components/BackButton";
+import FixedButton from "../components/FixedButton";
 export default function AmountEntryScreen() {
    const { accountNumber,clientNumber,receipientName } = useLocalSearchParams();
   const [amount, setAmount] = useState("");
@@ -152,7 +153,13 @@ const [tempSelectedAccount, setTempSelectedAccount] = useState(selectedAccount);
 
 
   return (
-    <View style={styles.container}>
+    <View style={{flex:1,backgroundColor: "#fff"}}>
+      {/* Header */}
+                  <View style={styles.headerWrapper}>
+                    <Header title="Transfer to other bank" />
+                  </View>
+<View style={styles.container}>
+      
       {/* Amount Entry */}
       <View style={styles.amountWrapper}>
         <TextInput
@@ -218,10 +225,19 @@ const [tempSelectedAccount, setTempSelectedAccount] = useState(selectedAccount);
             )}
           </View>
         ))}
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
+        
       </View>
+      <View style={styles.footer}>
+                    <FixedButton
+                      title="Next"
+                      onPress={handleNext}
+                      containerStyle={{
+                        marginBottom: 0,
+                        backgroundColor: "transparent",
+                      }}
+                      buttonStyle={{ backgroundColor: "#003366" }}
+                    />
+                  </View>
 
       {/* === Account Selection Modal === */}
       <Modal
@@ -358,6 +374,8 @@ const [tempSelectedAccount, setTempSelectedAccount] = useState(selectedAccount);
         </View>
       </Modal>
     </View>
+    </View>
+    
   );
 }
 
@@ -568,4 +586,11 @@ toggleRow: {
   transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }], // keep it small like 27.5 x 15
   marginLeft:4
 },
+    headerWrapper: {
+    paddingBottom: 8,
+    marginBottom: 8,
+    marginTop: 30,
+    marginLeft: 20,
+  },
+    footer: { width: "100%",marginTop:"-8%" },
 });

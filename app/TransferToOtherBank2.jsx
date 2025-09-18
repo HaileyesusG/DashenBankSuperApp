@@ -17,7 +17,7 @@ import {
   View,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-
+import Header from "../components/BackButton";
 // Map keys to actual images
 const imageMap = {
   CommercialB: require("../assets/images/CommercialB.png"),
@@ -109,6 +109,10 @@ const filteredBeneficiaries = beneficiaries.filter(
     behavior={Platform.OS === "ios" ? "padding" : undefined}
     keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0} // helps on iOS
     >
+      {/* Header */}
+            <View style={styles.headerWrapper}>
+              <Header title="Transfer to other bank" />
+            </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.mainContainer}>
           <FlatList
@@ -345,5 +349,11 @@ buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
     borderColor: "#00000066",
     marginVertical: 8, // optional spacing
     alignSelf: "center",
+  },
+    headerWrapper: {
+    paddingBottom: 8,
+    marginBottom: 8,
+    marginTop: 30,
+    marginLeft: 20,
   },
 });
