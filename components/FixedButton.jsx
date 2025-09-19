@@ -1,10 +1,33 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 
-export default function FixedButton({ title, onPress, containerStyle, buttonStyle, textStyle }) {
+export default function FixedButton({
+  title,
+  onPress,
+  containerStyle,
+  buttonStyle,
+  textStyle,
+  loading = false,
+  disabled = false,
+}) {
   return (
     <View style={[styles.container, containerStyle]}>
-      <TouchableOpacity style={[styles.button, buttonStyle]} onPress={onPress}>
-        <Text style={[styles.text, textStyle]}>{title}</Text>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          buttonStyle,
+          (disabled || loading) && { backgroundColor: "#ccc" },
+        ]}
+        onPress={onPress}
+        disabled={disabled || loading}
+      >
+        {loading ? (
+          <>
+            <ActivityIndicator size="small" color="#fff" style={{ marginRight: 8 }} />
+            <Text style={[styles.text, textStyle]}>{title}</Text>
+          </>
+        ) : (
+          <Text style={[styles.text, textStyle]}>{title}</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -22,6 +45,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
+    flexDirection: "row",   // 👈 allows spinner + text in a row
+    justifyContent: "center",
   },
   text: {
     color: "#fff",

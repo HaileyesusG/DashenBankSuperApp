@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import Header from "../components/BackButton";
+import FixedButton from "../components/FixedButton";
 // Map keys to actual images
 const imageMap = {
   CommercialB: require("../assets/images/CommercialB.png"),
@@ -35,7 +36,7 @@ export default function EnterAccountScreen() {
   const [profile, setProfile] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
   const redirect = useRouter();
-  const  receipientName="Kebede Lema Ayenew";
+  const receipientName = "Kebede Lema Ayenew";
   const handleNext = () => {
     console.log("abebe beso");
     if (!accountNumber) return;
@@ -96,30 +97,30 @@ export default function EnterAccountScreen() {
     },
   ];
   // Filter beneficiaries dynamically
-const filteredBeneficiaries = beneficiaries.filter(
-  (b) =>
-    b.number.includes(accountNumber) || 
-    b.name.toLowerCase().includes(accountNumber.toLowerCase())
-);
-
+  const filteredBeneficiaries = beneficiaries.filter(
+    (b) =>
+      b.number.includes(accountNumber) ||
+      b.name.toLowerCase().includes(accountNumber.toLowerCase())
+  );
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-    behavior={Platform.OS === "ios" ? "padding" : undefined}
-    keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0} // helps on iOS
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
     >
       {/* Header */}
-            <View style={styles.headerWrapper}>
-              <Header title="Transfer to other bank" />
-            </View>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.headerWrapper}>
+        <Header title="Transfer to other bank" />
+      </View>
         <View style={styles.mainContainer}>
           <FlatList
-             data={accountNumber.length > 0 ? filteredBeneficiaries : beneficiaries}
-  keyExtractor={(item) => item.id}
-  style={styles.container}
-  contentContainerStyle={{ paddingBottom: 120 }}
+            data={
+              accountNumber.length > 0 ? filteredBeneficiaries : beneficiaries
+            }
+            keyExtractor={(item) => item.id}
+            style={styles.container}
+            contentContainerStyle={{ paddingBottom: 120 }}
             ListHeaderComponent={
               <>
                 <Text style={styles.headerText}>Enter Account Number</Text>
@@ -144,18 +145,17 @@ const filteredBeneficiaries = beneficiaries.filter(
 
                 {profile && (
                   <TouchableOpacity
-  onPress={() =>
-    redirect.push({
-      pathname: "TransferToOtherBank3",
-      params: {
-        accountNumber: "3742873648236", // 👈 pass account number here
-        clientNumber: accountNumber,
-        receipientName:receipientName
-      },
-    })
-  }
->
-
+                    onPress={() =>
+                      redirect.push({
+                        pathname: "TransferToOtherBank3",
+                        params: {
+                          accountNumber: "3742873648236", // 👈 pass account number here
+                          clientNumber: accountNumber,
+                          receipientName: receipientName,
+                        },
+                      })
+                    }
+                  >
                     <View style={styles.profileWrapper}>
                       <Image
                         source={require("../assets/images/DotLayer.png")}
@@ -168,7 +168,7 @@ const filteredBeneficiaries = beneficiaries.filter(
                         />
                         <View style={styles.profileTextContainer}>
                           <Text style={styles.profileName}>
-                          {receipientName}
+                            {receipientName}
                           </Text>
                           <Text style={styles.profileAccount}>
                             {accountNumber}
@@ -189,28 +189,27 @@ const filteredBeneficiaries = beneficiaries.filter(
             }
             renderItem={({ item }) => (
               <TouchableOpacity
-  onPress={() =>
-    redirect.push({
-      pathname: "TransferToOtherBank3",
-      params: {
-        accountNumber: "3742873648236",
-        clientNumber: item.number, // 👈 pass account number here
-        receipientName:item.name
-      },
-    })
-  }
-  style={styles.beneficiaryContainer}
->
-  <Image source={item.logo} style={styles.beneficiaryLogo} />
-  <View style={styles.beneficiaryTextContainer}>
-    <Text style={styles.beneficiaryName}>{item.name}</Text>
-    <Text style={styles.beneficiaryBank}>
-      {item.bank} ({item.number})
-    </Text>
-  </View>
-  <Ionicons name="chevron-forward" size={24} color="#000" />
-</TouchableOpacity>
-
+                onPress={() =>
+                  redirect.push({
+                    pathname: "TransferToOtherBank3",
+                    params: {
+                      accountNumber: "3742873648236",
+                      clientNumber: item.number, // 👈 pass account number here
+                      receipientName: item.name,
+                    },
+                  })
+                }
+                style={styles.beneficiaryContainer}
+              >
+                <Image source={item.logo} style={styles.beneficiaryLogo} />
+                <View style={styles.beneficiaryTextContainer}>
+                  <Text style={styles.beneficiaryName}>{item.name}</Text>
+                  <Text style={styles.beneficiaryBank}>
+                    {item.bank} ({item.number})
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={24} color="#000" />
+              </TouchableOpacity>
             )}
             ItemSeparatorComponent={({ leadingItem }) => {
               // show separator only if it's not the last item
@@ -223,39 +222,23 @@ const filteredBeneficiaries = beneficiaries.filter(
           />
 
           {/* Always visible button */}
- {/* Fixed Bottom Button (will move up with keyboard) */}
-        <View style={styles.bottomButtonWrapper}>
-  <Pressable
-    style={[
-      styles.bottomButton,
-      accountNumber.length >= 3 ? styles.buttonEnabled : styles.buttonDisabled,
-    ]}
-    onPress={handleNext}
-    disabled={loading || accountNumber.length < 3} // 👈 now requires >= 3
-  >
-    {loading ? (
-      <>
-        <ActivityIndicator
-          size="small"
-          color="#fff"
-          style={{ marginRight: 8 }}
-        />
-        <Text style={styles.buttonText}>Check Account</Text>
-      </>
-    ) : (
-      <Text style={styles.buttonText}>Next</Text>
-    )}
-  </Pressable>
-</View>
-
+          <View style={styles.bottomButtonWrapper}>
+            <FixedButton
+              title={loading ? "Checking Account..." : "Next"}
+              onPress={handleNext}
+              loading={loading}
+              disabled={accountNumber.length < 3}
+              containerStyle={{ marginBottom: 0, marginTop: 5, backgroundColor: "transparent" }}
+            />
+          </View>
         </View>
-      </TouchableWithoutFeedback>
+      
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: "#fff" },
+  mainContainer: { flex: 1, backgroundColor: "#fff", height:30 },
   container: { flex: 1, padding: 20 },
   headerText: { fontSize: 18, fontWeight: "bold", color: "#000" },
   subHeaderText: { fontSize: 14, color: "#888", marginTop: 5 },
@@ -280,30 +263,30 @@ const styles = StyleSheet.create({
   beneficiaryName: { fontSize: 14, fontWeight: "600", color: "#000" },
   beneficiaryBank: { fontSize: 12, color: "#888" },
 
-bottomButton: {
-  position: "absolute",
-  bottom: 20,
-  height: 50,
-  backgroundColor: "#003366",   // 👈 static background
-  borderRadius: 25,
-  justifyContent: "center",
-  alignItems: "center",
-  flexDirection: "row",
-  marginBottom: 20,
-  width:"100%"             // 👈 this pushes it further offscreen
-},
+  bottomButton: {
+    position: "absolute",
+    bottom: 20,
+    height: 50,
+    backgroundColor: "#003366", // 👈 static background
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 20,
+    width: "100%", // 👈 this pushes it further offscreen
+  },
 
-buttonDisabled: {
-  backgroundColor: "#ccc", // disabled gray
-},
+  buttonDisabled: {
+    backgroundColor: "#ccc", // disabled gray
+  },
 
-buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 
   profileWrapper: {
     marginTop: -20,
     alignItems: "center",
   },
-  
+
   profileBackground: {
     width: "100%", // keep original width or use '100%' minus margin
     height: 80,
@@ -319,12 +302,23 @@ buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
     flexDirection: "row",
     alignItems: "center",
   },
-  bottomButtonWrapper: {
+bottomButtonWrapper: {
   position: "absolute",
-  bottom: 20,
-  left: 20,
-  right: 20,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: "#fff", // optional background
+  paddingBottom: Platform.OS === "ios" ? 30 : 20, // safe area
 },
+
+
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === "ios" ? 30 : 20, // safe space for iPhone
+    marginTop: "auto",
+    backgroundColor: "#fff",
+  },
+
   profileImage: {
     width: 66,
     height: 66,
@@ -350,7 +344,7 @@ buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
     marginVertical: 8, // optional spacing
     alignSelf: "center",
   },
-    headerWrapper: {
+  headerWrapper: {
     paddingBottom: 8,
     marginBottom: 8,
     marginTop: 30,
