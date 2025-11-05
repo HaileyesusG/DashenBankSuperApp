@@ -1,9 +1,8 @@
+import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Slot, useRouter } from "expo-router";
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity,Image } from "react-native";
-import { Ionicons, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { CurvedBottomBarExpo } from "react-native-curved-bottom-bar";
-import { Slot } from "expo-router";
-import { useRouter } from "expo-router";
 export default function TabLayout() {
   const router = useRouter();
   return (
@@ -119,6 +118,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
+     paddingBottom: 20, // adjust number as you like
   },
   circleButton: {
     width: 60,

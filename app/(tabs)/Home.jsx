@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-  ImageBackground,
-} from "react-native";
-import Carousel from "react-native-reanimated-carousel";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { ScrollView } from "react-native-gesture-handler";
+import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState } from "react";
+import {
+  Dimensions,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import Carousel from "react-native-reanimated-carousel";
 const { width } = Dimensions.get("window");
 
 const balanceCards = [
@@ -27,7 +27,7 @@ const balanceCards = [
 const IconWrapper = ({ source }) => (
   <View
     style={{
-      width: 50, 
+      width: 50,
       height: 50,
       borderRadius: 25,
       justifyContent: "center",
@@ -105,11 +105,10 @@ const AdData = [
 ];
 
 const renderAdCard = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={item.image} style={styles.image} />
-    </View>
-  );
-
+  <View style={styles.card}>
+    <Image source={item.image} style={styles.image} />
+  </View>
+);
 
 export default function Home() {
   const [showBalance, setShowBalance] = useState(false);
@@ -182,38 +181,34 @@ export default function Home() {
     );
   };
 
-
-const renderMatrixPage = ({ item, index }) => {
-
-  return (
-    <View style={styles.matrixPage}>
-      {item.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
-          {row.map((cell, cellIndex) => (
-            <TouchableOpacity
-              key={cellIndex}
-              style={styles.iconBox}
-              onPress={() => {
-                if (cell.label === "Send To Other") {
-                  redirect.push("/TransferToOtherBank");
-                }
-                else if (cell.label === "Merchant Payment") {
-                  redirect.push("/QrscannerM");
-                } else {
-                  console.log("ok");
-                }
-              }}
-            >
-              {cell.icon}
-              <Text style={styles.iconLabel}>{cell.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ))}
-    </View>
-  );
-};
-
+  const renderMatrixPage = ({ item, index }) => {
+    return (
+      <View style={styles.matrixPage}>
+        {item.map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.row}>
+            {row.map((cell, cellIndex) => (
+              <TouchableOpacity
+                key={cellIndex}
+                style={styles.iconBox}
+                onPress={() => {
+                  if (cell.label === "Send To Other") {
+                    redirect.push("/TransferToOtherBank");
+                  } else if (cell.label === "Merchant Payment") {
+                    redirect.push("/QrscannerM");
+                  } else {
+                    console.log("ok");
+                  }
+                }}
+              >
+                {cell.icon}
+                <Text style={styles.iconLabel}>{cell.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -242,7 +237,7 @@ const renderMatrixPage = ({ item, index }) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView style={{marginTop:10}}>
+      <ScrollView style={{ marginTop: 10 }}>
         <View style={{ flex: 1, alignItems: "center" }}>
           {/* Balance Cards Carousel */}
           <Carousel
@@ -252,123 +247,129 @@ const renderMatrixPage = ({ item, index }) => {
             data={balanceCards}
             autoPlay={false}
             scrollAnimationDuration={500}
+            enabled={balanceCards.length > 1} // 👈 THIS prevents moving if only one card
             onSnapToItem={(index) => setActiveBalanceIndex(index)}
             renderItem={({ item }) => renderCard({ item })}
           />
 
           {/* Balance Cards Pagination Dots */}
-          <View style={styles.pagination}>
-            {balanceCards.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  activeBalanceIndex === index
-                    ? { backgroundColor: "#003366" }
-                    : { backgroundColor: "gray" },
-                ]}
-              />
-            ))}
-          </View>
-
-          {/* Matrix Carousel */}
-          <View style={{ marginTop: 20 }}>
-            <Carousel
-              loop={false}
-              width={width}
-              height={200}
-              data={matrixData}
-              onSnapToItem={(index) => setActiveMatrixIndex(index)}
-              renderItem={({ item }) => renderMatrixPage({ item })}
-            />
-            {/* Matrix Pagination Dots */}
-            <View style={styles.matrixPagination}>
-              {matrixData.map((_, index) => (
+          {balanceCards.length > 1 && (
+            <View style={styles.pagination}>
+              {balanceCards.map((_, index) => (
                 <View
                   key={index}
                   style={[
-                    styles.matrixDot,
-                    activeMatrixIndex === index
+                    styles.dot,
+                    activeBalanceIndex === index
                       ? { backgroundColor: "#003366" }
                       : { backgroundColor: "gray" },
                   ]}
                 />
               ))}
             </View>
-          </View>
-<View style={{ marginBottom:20 }}>
-      <Carousel
-        loop
-        width={width * 0.98}
-        height={150}
-        data={AdData}
-        scrollAnimationDuration={500}
-        autoPlay
-        autoPlayInterval={3000}
-        onSnapToItem={(index) => setActiveAdIndex(index)}
-        renderItem={renderAdCard}
-        style={{ alignSelf: "center" }}
-      />
+          )}
 
-      {/* Pagination Dots */}
-      <View style={styles.pagination}>
-        {AdData.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.matrixDot,
-              activeAdIndex === index
-                ? { backgroundColor: "#003366" }
-                : { backgroundColor: "gray" },
-            ]}
-          />
-        ))}
-      </View>
-      <View>
-        {/* My Cards Button */}
-      <TouchableOpacity style={styles.myCardsButton}>
-        <View style={styles.myCardsLeft}>
-          <Image
-            source={require("../../assets/images/WalletIcon.png")} // your wallet icon
-            style={{ width: 45, height: 45, resizeMode: "contain" }}
-          />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.myCardsTitle}>My Cards</Text>
-            <Text style={styles.myCardsSubtitle}>
-              FCY Request, Get Cards & Card Management
-            </Text>
-          </View>
-        </View>
+          {/* Matrix Carousel */}
+          <View style={{ marginTop: 20 }}>
+            <Carousel
+              loop={matrixData.length > 1}
+              width={width}
+              height={200}
+              data={matrixData}
+              enabled={matrixData.length > 1} // 👈 Stop scroll if only 1 page
+              onSnapToItem={(index) => setActiveMatrixIndex(index)}
+              renderItem={({ item }) => renderMatrixPage({ item })}
+            />
 
-        <View style={styles.myCardsRight}>
-          <Ionicons name="chevron-forward" size={18} color="#003366" />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.myCardsButton}>
-        <View style={styles.myCardsLeft}>
-          <Image
-            source={require("../../assets/images/handCoin.png")} 
-            style={{ width: 45, height: 45, resizeMode: "contain" }}
-          />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.myCardsTitle}>Smart Pay</Text>
-            <Text style={styles.myCardsSubtitle}>
-              Add Beneficiary, Schedule Payments
-            </Text>
+            {/* Matrix Pagination Dots */}
+            {matrixData.length > 1 && (
+              <View style={styles.matrixPagination}>
+                {matrixData.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.matrixDot,
+                      activeMatrixIndex === index
+                        ? { backgroundColor: "#003366" }
+                        : { backgroundColor: "gray" },
+                    ]}
+                  />
+                ))}
+              </View>
+            )}
           </View>
-        </View>
+          <View style={{ marginBottom: 20 }}>
+            <Carousel
+              loop
+              width={width * 0.98}
+              height={150}
+              data={AdData}
+              scrollAnimationDuration={500}
+              autoPlay
+              autoPlayInterval={3000}
+              onSnapToItem={(index) => setActiveAdIndex(index)}
+              renderItem={renderAdCard}
+              style={{ alignSelf: "center" }}
+            />
 
-        <View style={styles.myCardsRight}>
-          <Ionicons name="chevron-forward" size={18} color="#003366" />
-        </View>
-      </TouchableOpacity>
-      </View>
-    </View>
+            {/* Pagination Dots */}
+            <View style={styles.pagination}>
+              {AdData.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.matrixDot,
+                    activeAdIndex === index
+                      ? { backgroundColor: "#003366" }
+                      : { backgroundColor: "gray" },
+                  ]}
+                />
+              ))}
+            </View>
+            <View>
+              {/* My Cards Button */}
+              <TouchableOpacity style={styles.myCardsButton}>
+                <View style={styles.myCardsLeft}>
+                  <Image
+                    source={require("../../assets/images/WalletIcon.png")} // your wallet icon
+                    style={{ width: 45, height: 45, resizeMode: "contain" }}
+                  />
+                  <View style={{ marginLeft: 10 }}>
+                    <Text style={styles.myCardsTitle}>My Cards</Text>
+                    <Text style={styles.myCardsSubtitle}>
+                      FCY Request, Get Cards & Card Management
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.myCardsRight}>
+                  <Ionicons name="chevron-forward" size={18} color="#003366" />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.myCardsButton}>
+                <View style={styles.myCardsLeft}>
+                  <Image
+                    source={require("../../assets/images/handCoin.png")}
+                    style={{ width: 45, height: 45, resizeMode: "contain" }}
+                  />
+                  <View style={{ marginLeft: 10 }}>
+                    <Text style={styles.myCardsTitle}>Smart Pay</Text>
+                    <Text style={styles.myCardsSubtitle}>
+                      Add Beneficiary, Schedule Payments
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.myCardsRight}>
+                  <Ionicons name="chevron-forward" size={18} color="#003366" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </ScrollView>
 
       {/* Circle Image */}
-      
     </View>
   );
 }
@@ -378,6 +379,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F7FA",
     alignItems: "center",
+
+    paddingBottom: 90, // <-- prevents overlap
   },
 
   topBar: {
@@ -489,7 +492,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 
-
   circleImage: {
     width: 60,
     height: 60,
@@ -499,7 +501,7 @@ const styles = StyleSheet.create({
     left: width / 2 - 35,
     backgroundColor: "#003366",
     marginBottom: 15,
-    marginLeft:5,
+    marginLeft: 5,
 
     // Center the icon inside the circle
     justifyContent: "center",
@@ -542,7 +544,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 5,
   },
-   cardAd: {
+  cardAd: {
     width: "100%",
     height: 200,
     borderRadius: 12,
@@ -554,14 +556,13 @@ const styles = StyleSheet.create({
     width: "auto",
     height: "60%",
     resizeMode: "cover",
-    borderRadius:15
+    borderRadius: 15,
   },
   dot2: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
-    
   },
   title2: {
     position: "absolute",
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
-    myCardsButton: {
+  myCardsButton: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
